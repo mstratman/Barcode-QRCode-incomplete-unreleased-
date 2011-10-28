@@ -26,6 +26,29 @@ Barcode::QRCode - Pure-perl generation of QR Code barcode data
 
 =cut
 
+=head1 SYNOPSIS
+
+    use Barcode::QRCode;
+
+    my $qrcode = Barcode::QRCode->new(data => 'Hello, World');
+
+    # Get a simple array of arrays with true/false values
+    my $barcode = $qrcode->barcode;
+
+    # Print a text representation of this barcode
+    for my $row (@$barcode) {
+        for my $cell (@$row) {
+            print $cell ? '#' : ' ';
+        }
+        print "\n";
+    }
+
+=head1 DESCRIPTION
+
+TODO: ...
+
+=cut
+
 # This perl module was initially cargo-culted straight from
 # http://d-project.googlecode.com/svn/trunk/misc/qrcode/js/qrcode.js
 # It has undergone some minor cleanups to be more perl'ish, but it's still
@@ -48,6 +71,10 @@ Barcode::QRCode - Pure-perl generation of QR Code barcode data
 #//   http://www.denso-wave.com/qrcode/faqpatent-e.html
 #//
 #//---------------------------------------------------------------------
+
+=head1 ATTRIBUTES
+
+=cut
 
 has 'data' => (
     is      => 'rw',
@@ -109,6 +136,17 @@ sub _build_modules_per_side {
     $self->version_number * 4 + 17;
 }
 
+=head1 METHODS
+
+=head2 new
+
+TODO: ...
+
+=head2 barcode
+
+TODO: ...
+
+=cut
 
 sub barcode {
     my $self = shift;
@@ -128,6 +166,45 @@ sub barcode {
 
     return $self->_modules;
 }
+
+=head1 AUTHOR
+
+Mark A. Stratman, C<< <stratman@gmail.com> >>
+
+=head1 ACKNOWLEDGEMENTS
+
+This perl module was initially cargo-culted straight from
+an older version of
+L<http://d-project.googlecode.com/svn/trunk/misc/qrcode/js/qrcode.js>
+Copyright (c) 2009 Kazuhiko Arase
+
+It has undergone some minor cleanups to be more perl'ish, but it's still
+very much a work in progress.
+
+=head1 SOURCE REPOSITORY
+
+L<http://github.com/mstratman/Barcode-QRCode>
+
+=head1 SEE ALSO
+
+=over 4
+
+=item L<HTML::Barcode::QRCode>
+
+=back
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2011 the AUTHORs and CONTRIBUTERS listed above.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+
+=cut
 
 
 sub _make_impl {
