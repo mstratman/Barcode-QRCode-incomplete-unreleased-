@@ -678,7 +678,7 @@ sub _create_data {
 
         my $mod_poly = $raw_poly->mod($rs_poly);
 
-        $ec_data->[$r] = [];
+        $ec_data->[$r] = [ (undef) x (scalar(@{ $rs_poly->components }) - 1) ];
         for my $i (0 .. (scalar(@{$rs_poly->components}) - 2)) {
             my $mod_index = $i + scalar(@{ $mod_poly->components }) - scalar(@{ $ec_data->[$r] });
             $ec_data->[$r]->[$i] = ($mod_index >= 0) ? $mod_poly->components->[$mod_index] : 0;

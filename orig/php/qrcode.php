@@ -102,6 +102,7 @@ class QRCode {
 		return $this->qrDataList[$index];
 	}
 
+    function getModules() { return $this->modules; }
 	function isDark($row, $col) {
 		if ($this->modules[$row][$col] !== null) {
 			return $this->modules[$row][$col];
@@ -1411,11 +1412,14 @@ class QRPolynomial {
 	
 	function mod($e) {
 
+        echo "* $this\n";
 		if ($this->getLength() - $e->getLength() < 0) {
+            echo "returning ... " . $this->getLength() . " - " . $e->getLength() . " < 0\n";
 			return $this;
 		}
 
 		$ratio = QRMath::glog($this->get(0) ) - QRMath::glog($e->get(0) );
+        echo "RATIO: $ratio\n";
 
 		$num = QRMath::createNumArray($this->getLength() );
 		for ($i = 0; $i < $this->getLength(); $i++) {
@@ -1424,6 +1428,7 @@ class QRPolynomial {
 		
 		for ($i = 0; $i < $e->getLength(); $i++) {
 			$num[$i] ^= QRMath::gexp(QRMath::glog($e->get($i) ) + $ratio);
+            echo "\t\t--- " . $num[$i] . "\n";
 		}
 
 		$newPolynomial = new QRPolynomial($num);
@@ -1502,7 +1507,6 @@ class QRBitBuffer {
 	}
 
 	function put($num, $length) {
-
 		for ($i = 0; $i < $length; $i++) {
 			$this->putBit( ( ($num >> ($length - $i - 1) ) & 1) == 1);
 		}

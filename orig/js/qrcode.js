@@ -302,7 +302,9 @@ var qrcode = (function() {
 
 				ecdata[r] = new Array(rsPoly.getLength() - 1);
 				for (var i = 0; i < ecdata[r].length; i += 1) {
+                    //console.log("i=" + i + " modPoly.length=" + modPoly.getLength() + " ecdata[r].length=" + ecdata[r].length);
 					var modIndex = i + modPoly.getLength() - ecdata[r].length;
+                    //console.log("ModIndex: " + modIndex);
 					ecdata[r][i] = (modIndex >= 0)? modPoly.get(modIndex) : 0;
 				}
 			}
@@ -342,6 +344,9 @@ var qrcode = (function() {
 			
 			var buffer = qrBitBuffer();
 			
+            console.log(dataList[0].getMode());
+            console.log(dataList[0].getLength());
+            console.log(_dataList[0]);
 			for (var i = 0; i < dataList.length; i += 1) {
 				var data = dataList[i];
 				buffer.put(data.getMode(), 4);
@@ -396,6 +401,7 @@ var qrcode = (function() {
 			_dataCache = null;
 		};
 		
+        _this.getModules = function() { return _modules };
 		_this.isDark = function(row, col) {
 			if (row < 0 || _moduleCount <= row || col < 0 || _moduleCount <= col) {
 				throw new Error(row + ',' + col);
@@ -1002,12 +1008,16 @@ var qrcode = (function() {
     /*
     var p1 = qrPolynomial([1], 0);
     var p2 = qrPolynomial([1,1], 0);
-    */
-    /*
-    var p1 = qrPolynomial([1, 3, 2], 0);
-    var p2 = qrPolynomial([1,4], 0);
+    var p1 = qrPolynomial([64, 54, 22, 38, 48, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17], 7);
+    var p2 = qrPolynomial([1, 127, 122, 154, 164, 11, 68, 117], 0);
     var p3 = p1.mod(p2);
     console.log("Mod:");
+    console.log(p3.getNum());
+
+    p1 = qrPolynomial([64, 19, 0, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236,null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null], 18);
+    p2 = qrPolynomial([ 1, 239, 251, 183, 113, 149, 175, 199, 215, 240, 220, 73, 82, 173, 75, 32, 67, 217, 146], 0);
+    p3 = p1.mod(p2);
+    console.log("Mod 2:");
     console.log(p3.getNum());
     */
 

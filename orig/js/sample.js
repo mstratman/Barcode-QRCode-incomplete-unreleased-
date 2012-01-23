@@ -5,9 +5,24 @@ var draw_qrcode = function(text, typeNumber, errorCorrectLevel) {
 
 var create_qrcode = function(text, typeNumber, errorCorrectLevel, table) {
 
-	var qr = qrcode(typeNumber || 4, errorCorrectLevel || 'M');
+	//var qr = qrcode(typeNumber || 4, errorCorrectLevel || 'M');
+	var qr = qrcode(typeNumber || 1, errorCorrectLevel || 'L');
 	qr.addData(text);
 	qr.make();
+
+    var count = qr.getModuleCount();
+    var modules = qr.getModules();
+    var output  = '[ ';
+    for (var i = 0; i < count; i++) {
+        output += '[ ';
+        for (var j = 0; j < count; j++) {
+            output += modules[i][j] ? 1 : 0;
+            output += ',';
+        }
+        output += ' ],';
+    }
+    output += ' ]';
+    console.log(output);
 
 	return qr.createTable();
 	return qr.createGif();
