@@ -26,7 +26,7 @@ sub _build_components {
         $offset++;
     }
 
-    my $rv = [];
+    my $rv = [ (0) x (scalar(@$raw_components) - $offset + $self->shift_val) ];
     for my $i (0 .. ($#$raw_components - $offset)) {
         $rv->[$i] = $raw_components->[$i + $offset];
     }
@@ -37,7 +37,7 @@ sub _build_components {
 sub multiply {
     my ($self, $e) = @_;
 
-    my $num = [];
+    my $num = [ (0) x (scalar(@{ $self->components }) + scalar(@{ $e->components }) - 1) ];
 
     for my $i (0 .. $#{ $self->components }) {
         for my $j (0 .. $#{ $e->components }) {
@@ -63,7 +63,7 @@ sub mod {
 
     my $ratio = glog($self->components->[0]) - glog($e->components->[0]);
 
-    my $num = [];
+    my $num = [ (0) x scalar(@{ $self->components }) ];
 
     for my $i (0 .. $#{ $self->components }) {
         $num->[$i] = $self->components->[$i];
@@ -72,7 +72,6 @@ sub mod {
         $num->[$i] ^= gexp(glog($e->components->[$i]) + $ratio);
     }
 
-    #// recursive call
     return Barcode::QRCode::Polynomial->new(
         raw_components => $num,
         shift_val      => 0,

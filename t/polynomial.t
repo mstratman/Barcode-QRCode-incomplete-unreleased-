@@ -73,9 +73,27 @@ BEGIN { use_ok('Barcode::QRCode::Polynomial') }
     my $p3 = $p1->mod($p2);
     is_deeply(
         $p3->components, 
-        [31, 146, 75, 136, 59, 181, 162, 132, 73, 177, 200, 73, 101, 24, 108, 132, 60, 137],
+        [54, 255, 44, 11, 150, 125, 135, 190, 155, 25, 5, 121, 88, 44, 166, 124, 89, 138],
         'mod() test 1'
     );
 }
+
+{
+    my $p1 = Barcode::QRCode::Polynomial->new(
+        shift_val => 7,
+        raw_components => [ 64, 54, 22, 38, 48, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17 ],
+    );
+    my $p2 = Barcode::QRCode::Polynomial->new(
+        shift_val => 0,
+        raw_components => [ 1, 127, 122, 154, 164, 11, 68, 117 ],
+    );
+    my $p3 = $p1->mod($p2);
+    is_deeply(
+        $p3->components, 
+        [182, 160, 44, 120, 186, 25, 106],
+        'mod() test 2'
+    );
+}
+
 
 done_testing;
