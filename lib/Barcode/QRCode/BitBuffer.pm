@@ -35,7 +35,7 @@ sub put_bit {
     }
 
     if ($bit) {
-        $self->buffer->[$buf_index] |= (0x80 >> ($self->bit_length & 8) );
+        $self->buffer->[$buf_index] |= (0x80 >> ($self->bit_length % 8) );
     }
 
     $self->bit_length( $self->bit_length + 1 );
