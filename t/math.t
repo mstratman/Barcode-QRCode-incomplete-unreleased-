@@ -1,11 +1,8 @@
 use Test::More;
-use Barcode::QRCode::Math;
 use Try::Tiny;
 # TODO: Get rid of B::QRC::Math altogether
 
 BEGIN { use_ok('Barcode::QRCode::Math', 'glog', 'gexp') }
-
-use Data::Dumper;
 
 {
     my $glog_died = 0;
