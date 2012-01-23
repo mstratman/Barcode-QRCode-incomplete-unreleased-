@@ -13,7 +13,7 @@ my $barcode = $qr->barcode;
 
 # Gotten from the php library:
 is_deeply(
-    $qr->barcode,
+    $barcode,
     abc_v1_L_from_PHP(),
     "abc, version 1, L correction - compared to PHP output"
 );
