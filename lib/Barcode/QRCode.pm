@@ -153,6 +153,8 @@ sub barcode {
     my $data = shift;
     if (defined $data) {
         $self->data($data);
+    } else {
+        $data = $self->data;
     }
 
     # TODO: Conditionally check $self->mode and create the appropriate
