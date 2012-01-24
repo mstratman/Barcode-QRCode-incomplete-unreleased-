@@ -110,6 +110,7 @@ has 'version_number' => (
     lazy     => 1,
     clearer  => 'clear_version_number',
     builder  => '_build_version_number',
+    trigger => sub { $_[0]->_clear_modules_per_side },
     documentation => 'Auto-calculated by default. 1-40. See http://www.denso-wave.com/qrcode/qrgene2-e.html',
 );
 sub _build_version_number {
@@ -124,6 +125,7 @@ has '_modules_per_side' => (
     is      => 'ro',
     lazy    => 1,
     builder => '_build_modules_per_side',
+    clearer => '_clear_modules_per_side',
 );
 sub _build_modules_per_side {
     my $self = shift;
@@ -151,6 +153,11 @@ TODO: ...
 sub barcode {
     my $self = shift;
     my $data = shift;
+
+    $self->_data_cache(undef);
+    $self->_data_list([]);
+    $self->_modules([]);
+
     if (defined $data) {
         $self->data($data);
     } else {
