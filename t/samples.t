@@ -1,42 +1,68 @@
+use strict;
 use Test::More;
 use Barcode::QRCode;
-use strict;
+use FindBin;
+use File::Spec;
+BEGIN { push @INC, File::Spec->catfile($FindBin::Bin, 'lib') }
+use SampleData;
 
-# Compare some outputs of this library to that of the PHP and JS libraries.
+my $sanity_checks = 0;
 
-my $qr = Barcode::QRCode->new(
-    data => 'abc',
-    version_number => 1,
-    correction_level => 'L',
-);
-my $barcode = $qr->barcode;
-
-# Gotten from the php library:
-is_deeply(
-    $barcode,
-    abc_v1_L_from_PHP(),
-    "abc, version 1, L correction - compared to PHP output"
-);
-
-
-# tested this once, but it's static so we don't need to keep testing it.
-if (0) {
+# Compare static javascript output with static php output. No need to keep 
+# doing this so it's disabled now.
+# But it was useful because we're testing our Perl output against some
+# static values, so we need to know those static values are reproducable.
+if ($sanity_checks) {
+    my $sj = SampleData::sample_L1_from_JS();
+    my $sp = SampleData::sample_L1_from_PHP();
     is_deeply(
-        abc_v1_L_from_JS(),
-        abc_v1_L_from_PHP(),
-        "abc, version 1, L correction - JS vs PHP output"
+        $sj->{output},
+        $sp->{output},
+        "Sanity check 1 - JS vs PHP output"
+    );
+
+    my $sj = SampleData::sample_Q4_from_JS();
+    my $sp = SampleData::sample_Q4_from_PHP();
+    is_deeply(
+        $sj->{output},
+        $sp->{output},
+        "Sanity check 2 - JS vs PHP output"
     );
 }
 
-# These *_from_JS() and *_from_PHP values were pulled from some sample
-# scripts that use the (presumed-working) qrcode.php and qrcode.js 
-# libraries.
 
-sub abc_v1_L_from_JS {
-    return [ [ 1,1,1,1,1,1,1,0,0,0,1,1,1,0,1,1,1,1,1,1,1, ],[ 1,0,0,0,0,0,1,0,1,1,1,0,1,0,1,0,0,0,0,0,1, ],[ 1,0,1,1,1,0,1,0,0,0,1,1,1,0,1,0,1,1,1,0,1, ],[ 1,0,1,1,1,0,1,0,1,1,0,0,1,0,1,0,1,1,1,0,1, ],[ 1,0,1,1,1,0,1,0,0,1,0,0,1,0,1,0,1,1,1,0,1, ],[ 1,0,0,0,0,0,1,0,1,0,0,1,0,0,1,0,0,0,0,0,1, ],[ 1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1, ],[ 0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0, ],[ 1,1,1,1,1,0,1,1,1,0,0,1,0,1,0,1,0,1,0,1,0, ],[ 0,0,1,1,0,1,0,0,0,1,1,1,1,1,1,0,0,0,1,0,1, ],[ 1,1,0,0,1,1,1,0,1,0,1,0,1,0,1,1,0,0,0,1,0, ],[ 1,1,1,1,0,1,0,1,1,0,0,1,1,1,1,0,0,1,1,1,0, ],[ 1,1,0,1,0,1,1,1,0,1,1,0,1,0,0,1,0,0,0,0,0, ],[ 0,0,0,0,0,0,0,0,1,1,1,0,1,0,0,1,0,0,1,0,1, ],[ 1,1,1,1,1,1,1,0,1,1,1,1,0,1,0,0,1,1,0,1,0, ],[ 1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,1,0,1,1,1, ],[ 1,0,1,1,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0,0, ],[ 1,0,1,1,1,0,1,0,1,1,0,1,1,1,1,0,0,1,0,0,0, ],[ 1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,0,0,0,0,0, ],[ 1,0,0,0,0,0,1,0,1,0,1,1,1,1,1,0,0,1,0,0,0, ],[ 1,1,1,1,1,1,1,0,1,1,0,0,1,0,0,1,0,0,1,1,0, ], ];
+# Now... Compare some outputs of this library with those produced by
+# the PHP and/or JS libraries.
+
+{
+    my $s = SampleData::sample_L1();
+    my $qr = Barcode::QRCode->new(%{ $s->{input} });
+    is_deeply(
+        $qr->barcode,
+        $s->{output},
+        "Version 1, L correction",
+    );
 }
-sub abc_v1_L_from_PHP {
-    return [ [ 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1,  ],[ 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1,  ],[ 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1,  ],[ 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1,  ],[ 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1,  ],[ 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1,  ],[ 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1,  ],[ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  ],[ 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0,  ],[ 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1,  ],[ 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0,  ],[ 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0,  ],[ 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0,  ],[ 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1,  ],[ 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0,  ],[ 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1,  ],[ 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0,  ],[ 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0,  ],[ 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0,  ],[ 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0,  ],[ 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0,  ], ];
+
+
+{
+    my $s = SampleData::sample_L2();
+    my $qr = Barcode::QRCode->new(%{ $s->{input} });
+    is_deeply(
+        $qr->barcode,
+        $s->{output},
+        "Version 2, L correction",
+    );
+}
+
+{
+    my $s = SampleData::sample_Q4();
+    my $qr = Barcode::QRCode->new(%{ $s->{input} });
+    is_deeply(
+        $qr->barcode,
+        $s->{output},
+        "Version 4, Q correction",
+    );
 }
 
 done_testing;
