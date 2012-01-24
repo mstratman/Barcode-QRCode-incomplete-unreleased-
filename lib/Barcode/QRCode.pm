@@ -2,6 +2,11 @@ package Barcode::QRCode;
 use Any::Moose;
 use Any::Moose '::Util::TypeConstraints';
 
+use Data::Dumper; #debug TODO:DEBUG
+$Data::Dumper::Indent=0;
+our $DEBUG = 0;
+sub debug { if ($DEBUG) { print(STDERR @_); print STDERR "\n"; }  }
+
 use Barcode::QRCode::Constants qw(
     :modes
     $QR_CORRECTION_LEVEL_MAGIC_NUM
@@ -240,7 +245,21 @@ sub _make_impl {
         $self->_data_cache($self->_create_data);
     }
 
+debug("AT THIS POINT _modules is OK\n");
     $self->_map_data($mask_pattern);
+    $self->_convert_module_undefs_to_zeros;
+debug(Dumper($self->_modules));
+debug("AT THIS POINT _modules is broken\n");
+}
+
+sub _convert_module_undefs_to_zeros {
+    my $self = shift;
+    my $mod = $self->_modules;
+    for my $i (0 .. $#$mod) {
+        for my $j (0 .. $#{ $mod->[$i] }) {
+            $mod->[$i]->[$j] = 0 unless defined $mod->[$i]->[$j];
+        }
+    }
 }
 
 sub _setup_position_probe_pattern {
@@ -271,7 +290,9 @@ sub _best_mask_pattern {
     my $pattern = 0;
 
     for my $i (0 .. 7) {
+        if ($i == 0) { $DEBUG=1 }
         $self->_make_impl(1, $i);
+        if ($i == 0) { $DEBUG=0 }
 
         my $lost_point = $self->_lost_point;
         if ($i == 0 || $min_lost_point > $lost_point) {
@@ -410,7 +431,7 @@ sub _setup_position_adjust_pattern {
     my $pos = $QR_PATTERN_POSITION_TABLE->[$self->version_number - 1];
 
     for (my $i = 0; $i <= $#$pos; $i++) {
-        for (my $j = 0; $j < $#$pos; $j++) {
+        for (my $j = 0; $j <= $#$pos; $j++) {
             my $row = $pos->[$i];
             my $col = $pos->[$j];
 
@@ -533,7 +554,9 @@ sub _map_data {
 
         while (1) {
             for my $c (0 .. 1) {
+#if ($DEBUG) { print STDERR "working $row, " . ($col - $c) . " ..... " . $self->_modules->[$row]->[$col - $c]; };
                 unless (defined $self->_modules->[$row]->[$col - $c]) {
+#if ($DEBUG) { print STDERR " - DOING THIS ONE\n" }
                     my $dark = 0;
 
                     if ($byte_index < scalar(@$data)) {
@@ -557,12 +580,15 @@ sub _map_data {
 
             $row += $inc;
 
+debug("       $row < 0 || " . $self->_modules_per_side . " <= $row");
             if ($row < 0 || $self->_modules_per_side <= $row) {
                 $row -= $inc;
                 $inc = -$inc;
+debug("inc flipped: $row .. $inc");
                 last;
             }
         }
+debug("after inc flip");
     }
 }
 

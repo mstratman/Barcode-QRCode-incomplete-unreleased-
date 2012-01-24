@@ -1,5 +1,6 @@
 <?php
 
+$DEBUG = 0;
 //---------------------------------------------------------------
 // QRCode for PHP4
 //
@@ -116,17 +117,40 @@ class QRCode {
 	}
 
 	function make() {
-		$this->makeImpl(false, $this->getBestMaskPattern() );
+        global $DEBUG;
+        $bmp = $this->getBestMaskPattern();
+        $DEBUG=0;
+		$this->makeImpl(false, $bmp);
+		#$this->makeImpl(false, $this->getBestMaskPattern() );
+        $DEBUG=0;
 	}
 
+function dumpModules() {
+        $max=$this->getModuleCount();
+           $mod = $this->modules;
+echo "================\n[ ";
+for ($i = 0; $i < $max; $i++) {
+    echo "[ ";
+    for ($j = 0; $j < $max; $j++) {
+        echo $mod[$i][$j] ? 1 : 0;
+        echo ",";
+    }
+    echo " ],";
+}
+echo " ]\n================\n";
+}
+
 	function getBestMaskPattern() {
+	global $DEBUG;	
 
 		$minLostPoint = 0;
 		$pattern = 0;
 
 		for ($i = 0; $i < 8; $i++) {
 
+            if ($i == 0) { $DEBUG = 1; }
 			$this->makeImpl(true, $i);
+            if ($i == 0) { $DEBUG = 0; }
 
 			$lostPoint = QRUtil::getLostPoint($this);
 
@@ -148,6 +172,7 @@ class QRCode {
 	}
 	
 	function makeImpl($test, $maskPattern) {
+        global $DEBUG;
 
 		$this->moduleCount = $this->typeNumber * 4 + 17;
 
@@ -174,9 +199,11 @@ class QRCode {
 		$data = QRCode::createData($this->typeNumber, $this->errorCorrectLevel, $dataArray);
 
 		$this->mapData($data, $maskPattern);
+if ($DEBUG) { $this->dumpModules(); }
 	}
 	
 	function mapData(&$data, $maskPattern) {
+        global $DEBUG;
 		
 		$inc = -1;
 		$row = $this->moduleCount - 1;
@@ -191,7 +218,9 @@ class QRCode {
 				
 				for ($c = 0; $c < 2; $c++) {
 					
+//if ($DEBUG) { echo "working $row, " . ($col - $c) . " ..... " . $this->modules[$row][$col - $c] ; }
 					if ($this->modules[$row][$col - $c] === null) {
+//if ($DEBUG) { echo " - DOING THIS ONE\n"; } 
 						
 						$dark = false;
 
@@ -213,23 +242,27 @@ class QRCode {
 							$bitIndex = 7;
 						}
 					}
+#else { print_r($this->modules[$row][$col - $c]); echo "\n"; }#DEBUG debug
 				}
 								
 				$row += $inc;
 
+#if ($DEBUG) { echo "        $row < 0 || " . $this->moduleCount . " <= $row\n"; }
 				if ($row < 0 || $this->moduleCount <= $row) {
 					$row -= $inc;
 					$inc = -$inc;
+#if ($DEBUG) { echo "inc flipped: $row .. $inc ..\n"; }
 					break;
 				}
 			}
+#if ($DEBUG) { echo "after inc flip?\n"; }
 		}
 	}
 	
 	function setupPositionAdjustPattern() {
+        global $DEBUG;
 
 		$pos = QRUtil::getPatternPosition($this->typeNumber);
-
 		for ($i = 0; $i < count($pos); $i++) {
 
 			for ($j = 0; $j < count($pos); $j++) {
@@ -238,8 +271,10 @@ class QRCode {
 				$col = $pos[$j];
 				
 				if ($this->modules[$row][$col] !== null) {
+                    if ($DEBUG) { echo "NEXT on $row,$col\n"; }
 					continue;
 				}
+                    if ($DEBUG) { echo "keeping $row,$col\n"; }
 				
 				for ($r = -2; $r <= 2; $r++) {
 
@@ -679,7 +714,6 @@ class QRUtil {
 		
 
 		// LEVEL1
-		
 		for ($row = 0; $row < $moduleCount; $row++) {
 
 			for ($col = 0; $col < $moduleCount; $col++) {
@@ -1412,14 +1446,11 @@ class QRPolynomial {
 	
 	function mod($e) {
 
-        echo "* $this\n";
 		if ($this->getLength() - $e->getLength() < 0) {
-            echo "returning ... " . $this->getLength() . " - " . $e->getLength() . " < 0\n";
 			return $this;
 		}
 
 		$ratio = QRMath::glog($this->get(0) ) - QRMath::glog($e->get(0) );
-        echo "RATIO: $ratio\n";
 
 		$num = QRMath::createNumArray($this->getLength() );
 		for ($i = 0; $i < $this->getLength(); $i++) {
@@ -1428,7 +1459,6 @@ class QRPolynomial {
 		
 		for ($i = 0; $i < $e->getLength(); $i++) {
 			$num[$i] ^= QRMath::gexp(QRMath::glog($e->get($i) ) + $ratio);
-            echo "\t\t--- " . $num[$i] . "\n";
 		}
 
 		$newPolynomial = new QRPolynomial($num);

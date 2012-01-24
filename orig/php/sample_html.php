@@ -12,24 +12,23 @@ $qr = new QRCode();
 // QR_ERROR_CORRECT_LEVEL_M : 15%
 // QR_ERROR_CORRECT_LEVEL_Q : 25%
 // QR_ERROR_CORRECT_LEVEL_H : 30%
-$qr->setErrorCorrectLevel(QR_ERROR_CORRECT_LEVEL_L);
+$qr->setErrorCorrectLevel(QR_ERROR_CORRECT_LEVEL_Q);
 // 型番(大きさ)を設定
 // 1～10
-$qr->setTypeNumber(1);
+$qr->setTypeNumber(4);
 // データ(文字列※)を設定
 // ※日本語はSJIS
-$qr->addData("abc");
+$qr->addData("The quick brown fox jumps over the lazy dog");
+#$qr->addData("Longer text this time");
+#$qr->addData('A 78+ character string needs version 2 with error correction L. Force recalculating version.');
 // QRコードを作成
 
-/*
 $qr->make();
-*/
 
 //echo var_dump($qr->getModules());
 // HTML出力
 #$qr->printHTML();
 
-/*
 $mod = $qr->modules;
 $max = $qr->getModuleCount();
 echo "[ ";
@@ -37,13 +36,13 @@ for ($i = 0; $i < $max; $i++) {
     echo "[ ";
     for ($j = 0; $j < $max; $j++) {
         echo $mod[$i][$j] ? 1 : 0;
-        echo ", ";
+        echo ",";
     }
     echo " ],";
 }
 echo " ]\n";
-*/
 
+/*
 $p1 = new QRPolynomial(
     array( 64, 54, 22, 38, 48, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17, 236, 17 ),
     7
@@ -57,6 +56,7 @@ $p3 = $p1->mod($p2);
 echo "\n\nPolynomial: ";
 echo $p3;
 echo "\n";
+*/
 
 
 /*

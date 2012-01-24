@@ -1,0 +1,47 @@
+getLostPoint() is returning different values between perl and php
+
+has different $this->modules / $self->_modules.... so this is
+to be expected i guess.
+
+in _best_mask_pattern:
+    after this: $self->_make_impl(1, $i);
+    modules is different than php
+    even in first loop ($i == 0)
+      
+
+getBestMaskPattern()
+    - at start of this, modules is empty
+    - ... ? ... something breaks: probably makeImpl.
+    - inside lostPoint, it's different...
+
+debug("AT THIS POINT _modules is OK\n");
+    $self->_setup_position_adjust_pattern();
+debug("AT THIS POINT _modules is broken\n");
+
+****************** _setup_position_adjust_pattern IS BROKEN!
+
+in _setup_position_adjust_pattern, the $j loop never gets to 1, but it does
+    in the php
+
+---------------
+FIXED
+---------------------------
+
+But now..
+
+debug("AT THIS POINT _modules is OK\n");
+    $self->_setup_timing_pattern();
+debug(Dumper($self->_modules));
+debug("AT THIS POINT _modules is broken\n");
+
+
+---------------
+FIXED
+---------------------------
+
+But now..
+
+debug("AT THIS POINT _modules is OK\n");
+    $self->_map_data($mask_pattern);
+debug("AT THIS POINT _modules is broken\n");
+debug(Dumper($self->_modules));

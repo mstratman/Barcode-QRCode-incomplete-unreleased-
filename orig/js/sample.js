@@ -5,8 +5,9 @@ var draw_qrcode = function(text, typeNumber, errorCorrectLevel) {
 
 var create_qrcode = function(text, typeNumber, errorCorrectLevel, table) {
 
+    text = "The quick brown fox jumps over the lazy dog";
 	//var qr = qrcode(typeNumber || 4, errorCorrectLevel || 'M');
-	var qr = qrcode(typeNumber || 1, errorCorrectLevel || 'L');
+	var qr = qrcode(typeNumber || 4, errorCorrectLevel || 'Q');
 	qr.addData(text);
 	qr.make();
 
