@@ -119,9 +119,8 @@ class QRCode {
 	function make() {
         global $DEBUG;
         $bmp = $this->getBestMaskPattern();
-        $DEBUG=0;
+        $DEBUG=1;
 		$this->makeImpl(false, $bmp);
-if (1||$DEBUG) { $this->dumpModules(); }
 		#$this->makeImpl(false, $this->getBestMaskPattern() );
         $DEBUG=0;
 	}
@@ -188,6 +187,7 @@ echo " ]\n================\n";
 		$this->setupTimingPattern();
 
 		$this->setupTypeInfo($test, $maskPattern);
+if ($DEBUG) { $this->dumpModules(); }
 
 		if ($this->typeNumber >= 7) {
 			$this->setupTypeNumber($test);

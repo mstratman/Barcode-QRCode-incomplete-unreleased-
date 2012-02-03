@@ -4,8 +4,14 @@ use Any::Moose '::Util::TypeConstraints';
 
 use Data::Dumper; #debug TODO:DEBUG
 $Data::Dumper::Indent=0;
-our $DEBUG = 0;
+our $DEBUG=0;
 sub debug { if ($DEBUG) { print(STDERR @_); print STDERR "\n"; }  }
+sub debug_modules {
+    my $orig = shift;
+    use Clone;
+    my $m = Clone::clone($orig);
+    debug(Dumper(_convert_module_undefs_to_zeros(undef,$m)));
+}
 
 use Barcode::QRCode::Constants qw(
     :modes
@@ -241,8 +247,11 @@ sub _make_impl {
     $self->_setup_position_probe_pattern(0, $self->_modules_per_side - 7);
     $self->_setup_position_adjust_pattern();
     $self->_setup_timing_pattern();
+debug("AT THIS POINT _modules is OK\n");
     $self->_setup_type_info($test, $mask_pattern);
+debug("AT THIS POINT _modules is broken\n");
 
+    # TODO: Why? What is this actually doing...
     if ($self->version_number >= 7) {
         $self->_setup_version_number($test);
     }
@@ -257,12 +266,13 @@ sub _make_impl {
 
 sub _convert_module_undefs_to_zeros {
     my $self = shift;
-    my $mod = $self->_modules;
+    my $mod = shift || $self->_modules;
     for my $i (0 .. $#$mod) {
         for my $j (0 .. $#{ $mod->[$i] }) {
             $mod->[$i]->[$j] = 0 unless defined $mod->[$i]->[$j];
         }
     }
+    return $mod;
 }
 
 sub _setup_position_probe_pattern {
@@ -302,7 +312,6 @@ sub _best_mask_pattern {
         }
 
     }
-debug("AT THIS POINT _modules is OK\n");
 
     return $pattern;
 }
@@ -525,7 +534,7 @@ sub _setup_type_info {
     }
 
     # horizontal
-    for my $i (0 .. 15) {
+    for my $i (0 .. 14) {
         my $mod = (! $test && ( ($bits >> $i) & 1) == 1) ? 1 : 0;
 
         if ($i < 8) {
