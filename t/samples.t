@@ -21,8 +21,8 @@ if ($sanity_checks) {
         "Sanity check 1 - JS vs PHP output"
     );
 
-    my $sj = SampleData::sample_Q4_from_JS();
-    my $sp = SampleData::sample_Q4_from_PHP();
+    $sj = SampleData::sample_Q4_from_JS();
+    $sp = SampleData::sample_Q4_from_PHP();
     is_deeply(
         $sj->{output},
         $sp->{output},
