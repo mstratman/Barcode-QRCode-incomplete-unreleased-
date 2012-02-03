@@ -232,6 +232,7 @@ sub _make_impl {
     $self->_setup_timing_pattern();
     $self->_setup_type_info($test, $mask_pattern);
 
+    # TODO: Why? What is this actually doing...
     if ($self->version_number >= 7) {
         $self->_setup_version_number($test);
     }
@@ -241,6 +242,18 @@ sub _make_impl {
     }
 
     $self->_map_data($mask_pattern);
+    $self->_convert_module_undefs_to_zeros;
+}
+
+sub _convert_module_undefs_to_zeros {
+    my $self = shift;
+    my $mod = shift || $self->_modules;
+    for my $i (0 .. $#$mod) {
+        for my $j (0 .. $#{ $mod->[$i] }) {
+            $mod->[$i]->[$j] = 0 unless defined $mod->[$i]->[$j];
+        }
+    }
+    return $mod;
 }
 
 sub _setup_position_probe_pattern {
@@ -278,6 +291,7 @@ sub _best_mask_pattern {
             $min_lost_point = $lost_point;
             $pattern = $i;
         }
+
     }
 
     return $pattern;
@@ -410,7 +424,7 @@ sub _setup_position_adjust_pattern {
     my $pos = $QR_PATTERN_POSITION_TABLE->[$self->version_number - 1];
 
     for (my $i = 0; $i <= $#$pos; $i++) {
-        for (my $j = 0; $j < $#$pos; $j++) {
+        for (my $j = 0; $j <= $#$pos; $j++) {
             my $row = $pos->[$i];
             my $col = $pos->[$j];
 
@@ -501,7 +515,7 @@ sub _setup_type_info {
     }
 
     # horizontal
-    for my $i (0 .. 15) {
+    for my $i (0 .. 14) {
         my $mod = (! $test && ( ($bits >> $i) & 1) == 1) ? 1 : 0;
 
         if ($i < 8) {
