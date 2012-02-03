@@ -23,7 +23,9 @@ sub barcode_data {
         data => $self->text,
         %args,
     );
-    return $qrcode->barcode;
+    my $rv = $qrcode->barcode;
+    #use Data::Dumper;print STDERR Dumper($rv), "\n";
+    return $rv;
 }
 
 =head1 NAME

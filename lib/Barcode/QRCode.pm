@@ -176,7 +176,13 @@ sub barcode {
     push @{ $self->_data_list }, $byte;
     $self->_data_cache(undef);
 
-    $self->_make_impl(0, $self->_best_mask_pattern);
+    #$self->_make_impl(0, $self->_best_mask_pattern);
+    my $bmp = $self->_best_mask_pattern;
+$DEBUG=1;
+debug("AT THIS POINT _modules is OK\n");
+    $self->_make_impl(0, $bmp);
+debug(Dumper($self->_modules));
+debug("AT THIS POINT _modules is broken\n");
 
     return $self->_modules;
 }
@@ -245,11 +251,8 @@ sub _make_impl {
         $self->_data_cache($self->_create_data);
     }
 
-debug("AT THIS POINT _modules is OK\n");
     $self->_map_data($mask_pattern);
     $self->_convert_module_undefs_to_zeros;
-debug(Dumper($self->_modules));
-debug("AT THIS POINT _modules is broken\n");
 }
 
 sub _convert_module_undefs_to_zeros {
@@ -290,16 +293,16 @@ sub _best_mask_pattern {
     my $pattern = 0;
 
     for my $i (0 .. 7) {
-        if ($i == 0) { $DEBUG=1 }
         $self->_make_impl(1, $i);
-        if ($i == 0) { $DEBUG=0 }
 
         my $lost_point = $self->_lost_point;
         if ($i == 0 || $min_lost_point > $lost_point) {
             $min_lost_point = $lost_point;
             $pattern = $i;
         }
+
     }
+debug("AT THIS POINT _modules is OK\n");
 
     return $pattern;
 }
@@ -580,15 +583,15 @@ sub _map_data {
 
             $row += $inc;
 
-debug("       $row < 0 || " . $self->_modules_per_side . " <= $row");
+#debug("       $row < 0 || " . $self->_modules_per_side . " <= $row");
             if ($row < 0 || $self->_modules_per_side <= $row) {
                 $row -= $inc;
                 $inc = -$inc;
-debug("inc flipped: $row .. $inc");
+#debug("inc flipped: $row .. $inc");
                 last;
             }
         }
-debug("after inc flip");
+#debug("after inc flip");
     }
 }
 

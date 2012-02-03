@@ -24,6 +24,8 @@ $qr->addData("The quick brown fox jumps over the lazy dog");
 // QRコードを作成
 
 $qr->make();
+#$qr->dumpModules();
+exit;
 
 //echo var_dump($qr->getModules());
 // HTML出力

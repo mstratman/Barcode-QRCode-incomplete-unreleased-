@@ -1,6 +1,6 @@
 <?php
 
-$DEBUG = 0;
+$DEBUG=0;
 //---------------------------------------------------------------
 // QRCode for PHP4
 //
@@ -121,6 +121,7 @@ class QRCode {
         $bmp = $this->getBestMaskPattern();
         $DEBUG=0;
 		$this->makeImpl(false, $bmp);
+if (1||$DEBUG) { $this->dumpModules(); }
 		#$this->makeImpl(false, $this->getBestMaskPattern() );
         $DEBUG=0;
 	}
@@ -148,9 +149,7 @@ echo " ]\n================\n";
 
 		for ($i = 0; $i < 8; $i++) {
 
-            if ($i == 0) { $DEBUG = 1; }
 			$this->makeImpl(true, $i);
-            if ($i == 0) { $DEBUG = 0; }
 
 			$lostPoint = QRUtil::getLostPoint($this);
 
@@ -199,7 +198,6 @@ echo " ]\n================\n";
 		$data = QRCode::createData($this->typeNumber, $this->errorCorrectLevel, $dataArray);
 
 		$this->mapData($data, $maskPattern);
-if ($DEBUG) { $this->dumpModules(); }
 	}
 	
 	function mapData(&$data, $maskPattern) {
@@ -218,9 +216,7 @@ if ($DEBUG) { $this->dumpModules(); }
 				
 				for ($c = 0; $c < 2; $c++) {
 					
-//if ($DEBUG) { echo "working $row, " . ($col - $c) . " ..... " . $this->modules[$row][$col - $c] ; }
 					if ($this->modules[$row][$col - $c] === null) {
-//if ($DEBUG) { echo " - DOING THIS ONE\n"; } 
 						
 						$dark = false;
 
@@ -242,20 +238,16 @@ if ($DEBUG) { $this->dumpModules(); }
 							$bitIndex = 7;
 						}
 					}
-#else { print_r($this->modules[$row][$col - $c]); echo "\n"; }#DEBUG debug
 				}
 								
 				$row += $inc;
 
-#if ($DEBUG) { echo "        $row < 0 || " . $this->moduleCount . " <= $row\n"; }
 				if ($row < 0 || $this->moduleCount <= $row) {
 					$row -= $inc;
 					$inc = -$inc;
-#if ($DEBUG) { echo "inc flipped: $row .. $inc ..\n"; }
 					break;
 				}
 			}
-#if ($DEBUG) { echo "after inc flip?\n"; }
 		}
 	}
 	
@@ -271,10 +263,8 @@ if ($DEBUG) { $this->dumpModules(); }
 				$col = $pos[$j];
 				
 				if ($this->modules[$row][$col] !== null) {
-                    if ($DEBUG) { echo "NEXT on $row,$col\n"; }
 					continue;
 				}
-                    if ($DEBUG) { echo "keeping $row,$col\n"; }
 				
 				for ($r = -2; $r <= 2; $r++) {
 
