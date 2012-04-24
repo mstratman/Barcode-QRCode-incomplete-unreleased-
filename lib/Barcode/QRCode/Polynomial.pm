@@ -1,15 +1,14 @@
 package Barcode::QRCode::Polynomial;
-use Any::Moose;
+use Moo;
 use Barcode::QRCode::Math qw(glog gexp);
 
 has 'raw_components' => (
     is       => 'ro',
     required => 1,
-    isa     => 'ArrayRef[Maybe[Num]]',
 );
 has 'shift_val' => (
     is      => 'ro',
-    default => 0,
+    default => sub { 0 },
 );
 
 has 'components' => (
@@ -79,5 +78,4 @@ sub mod {
 }
 
 
-no Any::Moose;
 1;

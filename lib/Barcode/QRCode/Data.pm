@@ -1,16 +1,18 @@
 package Barcode::QRCode::Data;
-use Any::Moose;
+use Moo;
 
 use Barcode::QRCode::Constants qw(:modes);
 
 has 'data' => (
-    is            => 'ro',
-    required      => 1,
+    is       => 'ro',
+    required => 1,
 );
 has 'mode' => (
     is      => 'ro',
-    isa     => 'Int',
+    builder => '_build_mode',
 );
+sub _build_mode { undef }
+
 sub is_number    { $_[0]->mode == $QR_MODE_NUMBER }
 sub is_alpha_num { $_[0]->mode == $QR_MODE_ALPHA_NUM }
 sub is_8bit_byte { $_[0]->mode == $QR_MODE_8BIT_BYTE }
@@ -47,5 +49,4 @@ sub get_length {
 
 sub write_to_buffer { die "Not implemented" }
 
-no Any::Moose;
 1;

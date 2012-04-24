@@ -1,10 +1,10 @@
 package Barcode::QRCode::Data::Number;
-use Any::Moose;
+use Moo;
 extends 'Barcode::QRCode::Data';
 
 use Barcode::QRCode::Constants qw(:modes);
 
-has '+mode' => ( default => $QR_MODE_NUMBER );
+sub _build_mode { $QR_MODE_NUMBER }
 
 override 'write_to_buffer' => sub {
     my ($self, $buffer) = @_;
@@ -27,5 +27,4 @@ override 'write_to_buffer' => sub {
 
 };
 
-no Any::Moose;
 1;

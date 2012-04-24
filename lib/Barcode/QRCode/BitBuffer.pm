@@ -1,5 +1,5 @@
 package Barcode::QRCode::BitBuffer;
-use Any::Moose;
+use Moo;
 use POSIX qw(floor);
 
 has 'buffer' => (
@@ -8,7 +8,7 @@ has 'buffer' => (
 );
 has 'bit_length' => (
     is      => 'rw',
-    default => 0,
+    default => sub { 0 },
 );
 
 sub get {
@@ -41,5 +41,4 @@ sub put_bit {
     $self->bit_length( $self->bit_length + 1 );
 }
 
-no Any::Moose;
 1;

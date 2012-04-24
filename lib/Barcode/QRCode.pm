@@ -1,6 +1,5 @@
 package Barcode::QRCode;
-use Any::Moose;
-use Any::Moose '::Util::TypeConstraints';
+use Moo;
 
 use Barcode::QRCode::Constants qw(
     :modes
@@ -15,7 +14,7 @@ use Barcode::QRCode::BitBuffer;
 use Barcode::QRCode::Math qw(gexp);
 use Barcode::QRCode::Polynomial;
 use Barcode::QRCode::Data::EightBitByte;
-use List::Util qw(max);
+use List::Util qw(max first);
 use POSIX qw(floor);
 
 our $VERSION = '0.01';
@@ -78,25 +77,23 @@ TODO: ...
 
 has 'data' => (
     is      => 'rw',
-    default => '',
+    default => sub { '' },
     trigger => sub { $_[0]->clear_version_number },
     documentation => 'The data to embed in the QR code',
 );
 
 has 'mode' => (
     is      => 'ro',
-    default => $QR_MODE_8BIT_BYTE,
-    isa     => 'Int',
+    default => sub { $QR_MODE_8BIT_BYTE },
     documentation => 'TODO: Not currently utilized.',
     #documentation => 'Character encoding mode. Default is $QR_MODE_8BIT_BYTE. See :modes in Barcode::QRCode::Constants for more',
 );
 
-enum 'CorrectionLevel', [ qw(L M Q H) ];
 has 'correction_level' => (
     is       => 'ro',
-    isa      => 'CorrectionLevel',
+    isa      => sub { first { $_ eq $_[0] } qw(L M Q H) },
     required => 1,
-    default  => 'M',
+    default  => sub { 'M' },
     documentation => 'Correction level (L, M, Q, or H).  Default is M',
 );
 sub correction_level_magic_num {
@@ -106,7 +103,6 @@ sub correction_level_magic_num {
 
 has 'version_number' => (
     is       => 'rw',
-    isa      => 'Int',
     lazy     => 1,
     clearer  => 'clear_version_number',
     builder  => '_build_version_number',
@@ -751,5 +747,4 @@ sub _get_mask {
     die "Bad mask pattern: $p";
 }
 
-no Any::Moose;
 1;
